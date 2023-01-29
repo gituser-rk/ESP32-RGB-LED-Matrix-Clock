@@ -9,7 +9,8 @@ ESP32 based RGB-LED-Matrix WiFi Clock with MQTT sourced room and outside tempera
 - NTP timesource
 - timezone changable
 - firmware updatable over the air (HTTP webserver)
-
+- 5V/1A USB powersupply
+- power consumtion average is about 1.3W
 
 
 PCB was sourced from this design:
