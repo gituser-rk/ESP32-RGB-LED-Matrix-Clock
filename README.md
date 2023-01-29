@@ -19,3 +19,14 @@ https://hackaday.io/project/28945-iot-rgb-led-matrix-controller-esp32
 HUB75 DMA library used:
 https://github.com/mrfaptastic/ESP32-HUB75-MatrixPanel-DMA
 
+Wall mounted:
+![Pic1](pics/20230129_115709710_iOS.jpg)
+
+With acrylic front plate (30% light transfer):
+![Pic1](pics/20230129_120152541_iOS.jpg)
+
+Backside:
+![Pic1](pics/20230129_120210674_iOS.jpg)
+
+LDR detail:
+![Pic1](pics/20230129_120223002_iOS.jpg)
