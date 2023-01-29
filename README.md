@@ -31,3 +31,4 @@ Backside:
 
 LDR detail:
 ![Pic1](pics/20230129_120223002_iOS.jpg)
+Acrylic front plate is mounted with black PVC tape :-)
