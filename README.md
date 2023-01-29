@@ -27,6 +27,8 @@ https://www.pollin.de/p/joy-it-esp32-node-mcu-modul-810873
 HUB75 DMA library used:
 https://github.com/mrfaptastic/ESP32-HUB75-MatrixPanel-DMA
 
+# Final Pictures
+
 Wall mounted:
 ![Pic1](pics/20230129_115709710_iOS.jpg)
 
