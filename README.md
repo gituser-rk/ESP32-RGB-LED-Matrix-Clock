@@ -17,7 +17,8 @@ PCB was sourced from this design:
 https://hackaday.io/project/28945-iot-rgb-led-matrix-controller-esp32
 
 Display:
-search for "indoor 3mm led module full color 32*64 96mm*192mm hub75 1/16S rgb dot matrix p3" at ![aliexpress](https://www.aliexpress.com/item/32651977545.html)
+search for "indoor 3mm led module full color 32*64 96mm*192mm hub75 1/16S rgb dot matrix p3" at aliexpress
+https://www.aliexpress.com/item/32651977545.html
 
 ESP32 NodeMCU:
 ![Pic0](pics/I810873.1-JOY-IT-ESP32-Node-MCU-Modul.jpg)
