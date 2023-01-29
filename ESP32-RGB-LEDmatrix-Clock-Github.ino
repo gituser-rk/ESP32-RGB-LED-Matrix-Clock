@@ -17,10 +17,10 @@
 //end OTA
 
 const char* mqtt_server = "172.16.1.91";
-const char* mqttUser = "mqtt";
-const char* mqttPass = "mqtt";
-const char* mqttTopic_A = "home/aussen/temperature";
-const char* mqttTopic_I = "home/wohnbereich/temperature";
+const char* mqttUser = "your mqtt user";
+const char* mqttPass = "your mqtt password";
+const char* mqttTopic_A = "home/outside/temperature";
+const char* mqttTopic_I = "home/bath/temperature";
 const char* host = "ledclock1"; //network hostname, also MQTT client ID
 const char * ssid="YOUR WIFI SSID";
 const char * wifipw="YOUR WIFI KEY";
