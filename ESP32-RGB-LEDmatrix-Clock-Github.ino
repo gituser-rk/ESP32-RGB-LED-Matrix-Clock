@@ -17,16 +17,15 @@
 //end OTA
 
 const char* mqtt_server = "172.16.1.91";
-const char* mqttUser = "your mqtt user";
-const char* mqttPass = "your mqtt password";
-const char* mqttTopic_A = "home/outside/temperature";
-const char* mqttTopic_I = "home/bath/temperature";
-const char* host = "ledclock1"; //network hostname, also MQTT client ID
-const char * ssid="YOUR WIFI SSID";
-const char * wifipw="YOUR WIFI KEY";
+const char* mqttUser = "mqtt";
+const char* mqttPass = "mqtt";
+const char* mqttTopic_A = "home/aussen/temperature";
+const char* mqttTopic_I = "home/viggo/temperature";
+const char* host = "ledclock-github"; //network hostname, also MQTT client ID
+const char * ssid="YOURSSID";
+const char * wifipw="YOURPSK";
 const int analogPin  = 36; //pin where the LDR for brightness control is connected to
-// light sensor cabeling: +3.3V --10K-- AnalogPIN --LDR-- GND
-const int numReadings  = 100; //brightness average over numReadings count
+const int numReadings  = 1000; //brightness average over numReadings count
 
 
 int ResetCounter =0;
@@ -38,6 +37,7 @@ long total  = 0;
 
 char A_message[10]; //buffer for outside temperature
 char I_message[10]; //buffer for bathroom temperature
+char title_message[21]; //buffer for echo speaker nowPlaying text. plus 1 for string terminator
 
 #include <ESP32-HUB75-MatrixPanel-I2S-DMA.h>
 #define R1 5
@@ -117,13 +117,14 @@ long smooth() { /* function smooth */
 void drawText()
 {
   //workaround for custom fonts:
-  dma_display->fillScreen(dma_display->color444(0, 0, 0)); //custom fonts does'nt use the second color
+  dma_display->fillScreen(dma_display->color444(0, 0, 0)); //custom fonts doesn't use the second color
   //date
   dma_display->setTextSize(1);     // size 1 == 8 pixels high
   dma_display->setTextWrap(false); // Don't wrap at end of line - will do ourselves
   dma_display->setTextColor(dma_display->color444(15,9,0),dma_display->color444(0,0,0)); // orange,schwarz
   dma_display->setFont(&DejaVuSans9pt7b);
-  dma_display->setCursor(0, 7);    
+  dma_display->setCursor(0, 7);    // start at bottom left, with 2 pixel of spacing
+//  dma_display->setCursor(2, 0);    // start at top left, with 2 pixel of spacing
   struct tm timeinfo;
   char dateStringBuff[11]; //11 chars should be enough
   char lumin[7];
@@ -134,43 +135,48 @@ void drawText()
    //return;
   }
   else{strftime(dateStringBuff, sizeof(dateStringBuff), "%a %d %b", &timeinfo);}
-  // # remove ! from the above if comperator and uncomment the following 2 lines to display 
-  // # the brightness measurments instead of the date, see map() funktion in loop:
   //else{itoa(analogAvg, lumin, 10);}
   //dma_display->println(lumin);
   dma_display->println(dateStringBuff);
-  
+  //int delta = 1;
   int delta = 14;
 
   //Time
   dma_display->setFont(&FreeSans10pt7b);
+//  dma_display->setTextSize(2);     // size 2 == 2x8 pixels high
   dma_display->setTextColor(dma_display->color444(15,15,15),dma_display->color444(0,0,0));
+//  dma_display->setCursor(7, 8+delta);    // start at top left, with 8 pixel of spacing
   dma_display->setCursor(3, 8+delta);    // start at top left, with 8 pixel of spacing
+//  dma_display->setCursor(2, 24);    // start at bottom left of Adafruit Font, with 2 pixel of spacing
+  //Serial.println(&timeinfo, "%A, %B %d %Y %H:%M:%S");
   char timeStringBuff[9]; //50 chars should be enough
   strftime(timeStringBuff, sizeof(timeStringBuff), "%H:%M", &timeinfo);
   //dma_display->print(" ");
   dma_display->println(timeStringBuff);
-  dma_display->setTextSize(1);     // size 1 == 8 pixels high (buildin font)
+  dma_display->setTextSize(1);     // size 1 == 8 pixels high
 //seconds:
   dma_display->setFont(&DejaVuSans9pt7b);
   dma_display->setTextColor(dma_display->color444(9,9,9),dma_display->color444(0,0,0));
-  dma_display->setCursor(52, 23); 
+  dma_display->setCursor(52, 23);    // start at top left, with 8 pixel of spacing
   char secStringBuff[3]; //3 chars should be enough
   strftime(secStringBuff, sizeof(secStringBuff), "%S", &timeinfo);
+  //dma_display->print(" ");
   dma_display->println(secStringBuff);  
   dma_display->setFont();
   
   //temperature 
   delta = 8;
   dma_display->setFont(&DejaVuSans9pt7b);
-  dma_display->setTextColor(dma_display->color444(10,6,0)); // orange, little darker
-  dma_display->setCursor(0, 24+delta);   
+  //dma_display->setTextColor(dma_display->color444(0,6,12)); // blau etwas dunkler
+  dma_display->setTextColor(dma_display->color444(0,20,0)); // grün etwas dunkler
+  dma_display->setCursor(0, 24+delta);    // start at top left, with 8 pixel of spacing
   String aString("A");
   dma_display->print(aString);
   aString = ":";
   dma_display->setCursor(5, 24+delta);
   dma_display->print(aString); 
-  dma_display->setTextColor(dma_display->color444(15,9,0),dma_display->color444(0,0,0)); // orange,black
+  //dma_display->setTextColor(dma_display->color444(0,8,15),dma_display->color444(0,0,0)); // blau,schwarz
+  dma_display->setTextColor(dma_display->color444(15,9,0),dma_display->color444(0,0,0)); // orange,schwarz
   char bufTA [10];
   //convert char buffer to float, round to one decimal and convert back to char buffer
   if(!A_msgArrived)
@@ -182,13 +188,13 @@ void drawText()
   dma_display->setCursor(9, 24+delta);
   dma_display->print(bufTA);
   dma_display->setCursor(35, 24+delta);
-  dma_display->setTextColor(dma_display->color444(10,6,0)); // orange, little darker
+  dma_display->setTextColor(dma_display->color444(0,20,0)); // grün etwas dunkler
   aString = "I";
   dma_display->print(aString);
   aString = ":";
   dma_display->setCursor(36, 24+delta);
   dma_display->print(aString); 
-  dma_display->setTextColor(dma_display->color444(15,9,0),dma_display->color444(0,0,0)); // orange,black
+  dma_display->setTextColor(dma_display->color444(15,9,0),dma_display->color444(0,0,0)); // orange,schwarz
   char bufTI [10];
   //convert char buffer to float, round to one decimal and convert back to char buffer
   if(!I_msgArrived)
@@ -213,9 +219,10 @@ void initTime(String timezone){
 
   Serial.println("Setting up time");
   configTime(0, 0, "pool.ntp.org");    // First connect to NTP server, with 0 TZ offset
-  if(!getLocalTime(&timeinfo)){
+  while(!getLocalTime(&timeinfo)){ // loop until time was fetched. prevents from timezone not set when internet not available during startup (after power outage, router still booting)
     Serial.println("  Failed to obtain time");
-    return;
+    //return;
+    delay(60000);
   }
   Serial.println("  Got the time from NTP");
   // Now we can set the real timezone
@@ -265,23 +272,28 @@ void setTime(int yr, int month, int mday, int hr, int minute, int sec, int isDst
 void callback(char* topic, byte* payload, unsigned int length) {
   Serial.print("Message arrived [");
   Serial.print(topic);
+//  if (strcmp(topic,mqttTopic_A)==0){
   if (strcmp(topic,mqttTopic_A)==0){
     A_msgArrived = true;
     Serial.print("]\n ");
     int i=0;
     for (i;i<length;i++) {
+      //Serial.print((char)payload[i]);
       A_message[i]=char(payload[i]);
     }
     A_message[i]='\0';
+    //Serial.print(payload);
   }
   if (strcmp(topic,mqttTopic_I)==0) {
     I_msgArrived = true;
     Serial.print("]\n ");
     int i=0;
     for (i;i<length;i++) {
+      //Serial.print((char)payload[i]);
       I_message[i]=char(payload[i]);
     }
     I_message[i]='\0';
+    //Serial.print(payload);
   }  
 }
 WiFiClient espClient;
@@ -331,14 +343,14 @@ void reconnect() {
               Serial.println(mqttClient.state());
 
             } 
-            else {
+            /*else {
               ESP.restart();
             }
-             
+            */ 
             ResetCounter =0;
         }
         
-        // Wait 5 seconds before retrying (update display between)
+        // Wait 5 seconds before retrying
         delay(1000);
         drawText();
         delay(1000);
@@ -372,9 +384,10 @@ void setup() {
   dma_display->setBrightness8(30); //0-255
   // fill the screen with 'black'
   dma_display->fillScreen(dma_display->color444(0, 0, 0));
+  //drawText(0);
   Serial.begin(115200);
   Serial.setDebugOutput(true);
-  dma_display->setTextColor(dma_display->color444(15,15,15),dma_display->color444(0,0,0)); // white, black
+  dma_display->setTextColor(dma_display->color444(15,15,15),dma_display->color444(0,0,0)); // weiss,schwarz
   dma_display->setCursor(5, 0);
   String wString("WiFi ...");
   dma_display->print(wString);
@@ -470,6 +483,7 @@ void loop() {
 
     mqttClient.loop();
   analogAvg = smooth();
+  // light sensor cabeling: +3.3V --10K-- AnalogPIN --LDR-- GND
   // map ambient light (analog) value to display brightness:
   mappedAvg = map(analogAvg,4200,1100,15,120);
   dma_display->setBrightness8(mappedAvg); //0-255
