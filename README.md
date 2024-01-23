@@ -30,7 +30,7 @@ https://github.com/mrfaptastic/ESP32-HUB75-MatrixPanel-DMA
 # Final Pictures
 
 Wall mounted:
-![Pic1](pics/20230129_115709710_iOS.jpg)
+![Pic1](pics/20240123_200439913_iOS.jpg)
 
 With acrylic front plate (30% light transfer):
 ![Pic2](pics/20230129_120152541_iOS.jpg)
